@@ -1,0 +1,30 @@
+{
+  "diff": true,
+  "require": [
+    "dotenv/config",
+    "ts-node/register",
+    "tsconfig-paths/register"
+  ],
+  "extension": ["ts"],
+  "package": "./package.json",
+  "reporter": "spec",
+  "spec": [],
+  "exit": true,
+  "bail": true,
+  "slow": "175",
+  "timeout": "6000",
+  "recursive": true,
+  "watch": false,
+  "ui": "bdd",
+  "watch-files": [
+    "src/**/*.ts",
+    "test/**/*.test.ts"
+  ],
+  "watch-ignore": [
+    "node_modules",
+    "build",
+    "coverage",
+    "cdk"
+  ],
+  "colors": true
+}
