@@ -18,8 +18,10 @@ Receiving a message:
 ## Physical Supplies and Links
 
 Need to revisit the 3d model as I can only find 8x8 led matrix's and not 3x3 or 5x5 led matrix's.
+~~- ![3d model of the penguin](https://www.thingiverse.com/thing:2418547)~~
 
-- ![3d model of the penguin](https://www.thingiverse.com/thing:2418547)
+- ![Lithophane box](https://www.thingiverse.com/thing:3313421)
+- ![How to make a lithophane](https://www.instructables.com/Litophanes-How-to-3D-Print-your-photos/)
 - ![esp32](https://www.digikey.com/en/products/detail/espressif-systems/ESP32-S3-DEVKITC-1-N32R8V/15970965?utm_adgroup=&utm_source=google&utm_medium=cpc&utm_campaign=PMax%20Shopping_Product_Low%20ROAS%20Categories&utm_term=&utm_content=&gclid=Cj0KCQjwusunBhCYARIsAFBsUP9LnaJD9s0TqwgHO65f_HdPA6vvaPaSplHHLiGu4rG288dLipJM4GwaAu0MEALw_wcB)
 - ![8x8 flexible led matrix](https://www.amazon.com/gp/product/B0C2C6KF4Y/ref=ppx_yo_dt_b_asin_title_o00_s00?ie=UTF8&th=1)
 
