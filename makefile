@@ -21,7 +21,6 @@ all: install test
 .PHONY : install
 install :
 	npm install
-	npm run test
 
 .PHONY: test
 test:
@@ -48,7 +47,7 @@ build: install
 ################
 
 .PHONY: docker-build
-docker-build:
+docker-build: build
 	docker build -t $(DOCKER_IMAGE_NAME) .
 
 .PHONY: docker-run
