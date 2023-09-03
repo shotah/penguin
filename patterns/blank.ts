@@ -1,24 +1,24 @@
-// Description: A pattern for the LED matrix
-import {black, pink} from './colors';
+// Description: A black pattern for the LED matrix
+import {black} from './colors';
 
 const backgroundColor = black;
 
-export const kiss = [
+export const blank = [
   // Line one
   [
-    pink,
     backgroundColor,
-    pink,
     backgroundColor,
-    pink,
+    backgroundColor,
+    backgroundColor,
+    backgroundColor,
     backgroundColor,
     backgroundColor,
     backgroundColor,
   ],
   // Line two
   [
-    pink,
-    pink,
+    backgroundColor,
+    backgroundColor,
     backgroundColor,
     backgroundColor,
     backgroundColor,
@@ -28,22 +28,22 @@ export const kiss = [
   ],
   // Line three
   [
-    pink,
     backgroundColor,
-    pink,
     backgroundColor,
-    pink,
+    backgroundColor,
+    backgroundColor,
+    backgroundColor,
     backgroundColor,
     backgroundColor,
     backgroundColor,
   ],
   // Line four
   [
-    pink,
     backgroundColor,
-    pink,
     backgroundColor,
-    pink,
+    backgroundColor,
+    backgroundColor,
+    backgroundColor,
     backgroundColor,
     backgroundColor,
     backgroundColor,
@@ -52,21 +52,21 @@ export const kiss = [
   [
     backgroundColor,
     backgroundColor,
-    pink,
-    pink,
     backgroundColor,
-    pink,
-    pink,
+    backgroundColor,
+    backgroundColor,
+    backgroundColor,
+    backgroundColor,
     backgroundColor,
   ],
   // Line six
   [
     backgroundColor,
     backgroundColor,
-    pink,
     backgroundColor,
     backgroundColor,
-    pink,
+    backgroundColor,
+    backgroundColor,
     backgroundColor,
     backgroundColor,
   ],
@@ -75,21 +75,21 @@ export const kiss = [
     backgroundColor,
     backgroundColor,
     backgroundColor,
-    pink,
     backgroundColor,
     backgroundColor,
-    pink,
+    backgroundColor,
+    backgroundColor,
     backgroundColor,
   ],
   // Line eight
   [
     backgroundColor,
     backgroundColor,
-    pink,
-    pink,
     backgroundColor,
-    pink,
-    pink,
+    backgroundColor,
+    backgroundColor,
+    backgroundColor,
+    backgroundColor,
     backgroundColor,
   ],
 ];

@@ -2,7 +2,7 @@ import express, {Express, Request, Response} from 'express';
 import dotenv from 'dotenv';
 import winston, {transports, QueryOptions, format} from 'winston';
 import { heart } from './patterns/heart';
-import { black } from './patterns/black';
+import { blank } from './patterns/blank';
 import { smile } from './patterns/smile';
 import { kiss } from './patterns/kiss';
 
@@ -56,8 +56,8 @@ app.get('/:getId', (req: Request, res: Response) => {
       res.send(kiss);
       return;
     };
-    // TODO: Add a default pattern. Maybe a black screen?
-    // res.send(black);
+    // TODO: Add a default pattern. Maybe a blank screen?
+    // res.send(blank);
     res.send(response[0]?.message ?? {message: 'No presses yet'});
   });
 });
