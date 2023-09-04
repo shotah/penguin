@@ -42,11 +42,17 @@ unsigned long period = 120000;  // two minutes
 
 
 ////// Declaring NeoPixel variables. ///////////
-#define ONBOARD_LED_PIN 18
+// PIN out to control the LEDs
+// ESP32-s2:
+// #define ONBOARD_LED_PIN 18
+// ESP32-s3:
+#define ONBOARD_LED_PIN 38
 #define ONBOARD_LED_COUNT 1
 Adafruit_NeoPixel onboard_pixel(ONBOARD_LED_COUNT, ONBOARD_LED_PIN, NEO_GRB + NEO_KHZ800);
+// PIN out to control the LEDs
 #define LED_PIN 17
-#define LED_COUNT 11
+// How many LEDs we have connected
+#define LED_COUNT 74
 Adafruit_NeoPixel pixels(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 ////// Declaring NeoPixel variables. ///////////
 
@@ -129,32 +135,18 @@ static const char rootHtml[] PROGMEM = R"(
     <body>
         <h2>penguin API Settings</h2>
         <p>
-            Please make sure you have gone to Weather Unlocked and setup you API Settings. Please use the Developer URL here: <a href="https://developer.weatherunlocked.com/" target="_blank"> WeatherUnlocked.com</a>. Fill in the fields below and submit to
+            Please make sure you have gone to Github and setup you API and know your settings. URL can be found here: <a href="https://github.com/shotah/penguin/tree/main#penguin" target="_blank"> Penguin Readme</a>. Fill in the fields below and submit to
             enable penguin.
         </p>
         </br>
         <div>
             <form action="/">
-                <label for="apid">Developer Application ID: Required</label>
-                <input type="text" id="apid" name="applicationid" placeholder="ABC12345" valu
-e="{{APPID}}" required>
-                <label for="apkey">Application Key: Required</label>
-                <input type="text" id="apkey" name="applicationkey" placeholder="619b9d50..." value="{{APPKEY}}" required>
-Filter your search...
-Type:
-
-All
-
-
-
-
-
-
-
-
-
-                <label for="rsid">Resort ID: Required</label>
-                <input type="text" id="rsid" name="resortid" placeholder="206004" value="{{RESORTID}}" required>
+                <label for="apikey">API KEY: Required</label>
+                <input type="text" id="apikey" name="apikey" placeholder="619b9d50..." value="{{APIKEY}}" required>
+                <label for="fromuserid">From User ID: Required</label>
+                <input type="text" id="fromuserid" name="fromuserid" placeholder="USER1..." value="{{FROMUSERID}}" required>
+                <label for="touserid">To User ID: Required</label>
+                <input type="text" id="touserid" name="touserid" placeholder="USER2..." value="{{TOUSERID}}" required>
                 <input type="submit" class="button" value="Submit">
                 {{WRITESETTINGS}}
         </div>
@@ -165,69 +157,75 @@ All
 
 
 ///// GET api Settings //////
-String getApplicationID() {
+String getApiKey() {
   try {
-    String appId = preferences.getString("applicationid", "");
-    Serial.printf("getApplicationID: %s\n", &appId[0]);
-    return appId;
+    String apiKey = preferences.getString("apikey", "");
+    Serial.printf("getApiKey: %s\n", &apiKey[0]);
+    return apiKey;
   } catch (const std::exception& e) {
-    Serial.printf("getApplicationID error: %s\n", e.what());
+    Serial.printf("getApiKey error: %s\n", e.what());
     return "<p>";
   }
 }
-String getApplicationIDArgs(PageArgument& args) {
-  return getApplicationID();
+String getAPiKeyArgs(PageArgument& args) {
+  return getApiKey();
 }
-String getApplicationKey() {
+String getFromUsertId() {
   try {
-    String appKey = preferences.getString("applicationkey", "");
-    Serial.printf("getApplicationKey: %s\n", &appKey[0]);
-    return appKey;
-  } catch (const std::exception& e) {
-    Serial.printf("getApplicationKey error: %s\n", e.what());
-    return "<p>";
-  }
-}
-String getApplicationKeyArgs(PageArgument& args) {
-  return getApplicationKey();
-}
-String getResortId() {
-  try {
-    String resortId = preferences.getString("resortid", "");
-    Serial.printf("getResortId: %s\n", &resortId[0]);
+    String fromUserId = preferences.getString("fromuserid", "");
+    Serial.printf("getFromUsertId: %s\n", &fromUserId[0]);
     return resortId;
   } catch (const std::exception& e) {
-    Serial.printf("getResortId error: %s\n", e.what());
+    Serial.printf("getFromUsertId error: %s\n", e.what());
     return "<p>";
   }
 }
-String getResortIdArgs(PageArgument& args) {
-  return getResortId();
+String getFromUsertIdArgs(PageArgument& args) {
+  return getFromUsertId();
+}
+String getToUsertId() {
+  try {
+    String toUserId = preferences.getString("touserid", "");
+    Serial.printf("getToUsertId: %s\n", &toUserId[0]);
+    return resortId;
+  } catch (const std::exception& e) {
+    Serial.printf("getToUsertId error: %s\n", e.what());
+    return "<p>";
+  }
+}
+String getToUsertIdArgs(PageArgument& args) {
+  return getToUsertId();
 }
 ///// GET api Settings //////
 
 
-/////// Weather Unlocked Details /////
-String getConnectionUrl() {
-  String server_address = "http://api.weatherunlocked.com/api/resortforecast/";
-  String day_qty_and_hourly_interval = "?hourly_interval=12&num_of_days=1";
-  String connectionURL = String(server_address + getResortId() + day_qty_and_hourly_interval + "&app_id=" + getApplicationID() + "&app_key=" + getApplicationKey());
+/////// API URL Details /////
+String getResponseUrl() {
+  String server_address = "http://mc.bldhosting.com:3000/";
+  String connectionURL = String(server_address + getFromUsertId() "&key=" + getApiKey());
   Serial.printf("Using URL API: %s\n", &connectionURL[0]);
   return connectionURL;
 }
-/////// Weather Unlocked Details /////
+String postConnectionUrl() {
+  String server_address = "http://mc.bldhosting.com:3000/";
+  //// TODO: get button presses
+  String connectionURL = String(server_address + getToUsertId() + "&key=" + getApiKey()) + "&presses=2");
+  Serial.printf("Using URL API: %s\n", &connectionURL[0]);
+  return connectionURL;
+}
+/////// API URL Details /////
 
 
 ////// WRITE API Settings to SPIFFS ////////
 String writeApiSettings(PageArgument& args) {
-  if (args.hasArg("applicationid")) {
-    preferences.putString("applicationid", args.arg("applicationid"));
+  if (args.hasArg("apikey")) {
+    preferences.putString("apikey", args.arg("apikey"));
   }
-  if (args.hasArg("applicationkey")) {
-    preferences.putString("applicationkey", args.arg("applicationkey"));
+  if (args.hasArg("fromUserid")) {
+    preferences.putString("fromUserid", args.arg("fromUserid"));
   }
-  if (args.hasArg("resortid")) {
-    preferences.putString("resortid", args.arg("resortid"));
+  if (args.hasArg("toUserid")) {
+    preferences.putString("toUserid", args.arg("toUserid"));
   }
   delay(10);
   return "<p>";
@@ -236,22 +234,22 @@ String writeApiSettings(PageArgument& args) {
 
 
 ////// Building page and inserting data //////
-PageElement ROOT_ELM(FPSTR(rootHtml), { { "APPID", getApplicationIDArgs },
-                                        { "APPKEY", getApplicationKeyArgs },
-                                        { "RESORTID", getResortIdArgs },
+PageElement ROOT_ELM(FPSTR(rootHtml), { { "APPKEY", getAPiKeyArgs },
+                                        { "FROMUSERID", getFromUsertIdArgs },
+                                        { "TOUSERID", getToUsertIdArgs },
                                         { "WRITESETTINGS", writeApiSettings } });
 PageBuilder ROOT("/", { ROOT_ELM });
 ////// Building page and inserting data //////
 
 
 ///// Main call to API to get weather data /////
-JsonObject GetForecast() {
+JsonObject GetAPIResponse() {
   // init clients:
   WiFiClient wifi_client;
   HTTPClient http_client;
 
   // setup client:
-  http_client.begin(wifi_client, getConnectionUrl().c_str());
+  http_client.begin(wifi_client, getResponseUrl().c_str());
   int response_code = http_client.GET();
   Serial.printf("[HTTP] GET... code: %d\n", response_code);
   if (response_code == HTTP_CODE_OK) {
@@ -284,7 +282,7 @@ JsonObject GetForecast() {
 
 ///// calls get forcast and sets the values  /////
 void SetForecastValues() {
-  JsonObject forecast = GetForecast();
+  JsonObject forecast = GetAPIResponse();
   Serial.println(forecast);
   if (forecast["vis_mi"] > 0) { miles_of_visibility = ((int)forecast["vis_mi"]) + 1; }
   if (forecast["snow_in"] > 0) { inches_of_snow = (((int)forecast["snow_in"]) + 1) / 2; }

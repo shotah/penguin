@@ -74,7 +74,6 @@ app.post('/:toId', (req: Request, res: Response) => {
   }
   const message = {
     toId: req?.params?.toId?.toString(),
-    message: req?.query?.message?.toString(),
     presses: req?.query?.presses?.toString(),
   };
   logger.log('info', JSON.stringify(message), {timestamp: new Date()});
