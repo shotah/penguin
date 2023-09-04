@@ -1,3 +1,10 @@
+# ides
+.vscode
+.idea
+*.iml
+*.ipr
+*.iws
+
 # Logs
 logs
 *.log

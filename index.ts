@@ -9,6 +9,7 @@ import { kiss } from './patterns/kiss';
 dotenv.config();
 
 const app: Express = express();
+const key = process.env.KEY || 'default';
 const port = process.env.PORT || 3000;
 const logLevel = process.env.LOG_LEVEL || 'info';
 const logger = winston.createLogger({
@@ -21,6 +22,10 @@ const logger = winston.createLogger({
 });
 
 app.get('/:getId', (req: Request, res: Response) => {
+  if (req?.query?.key !== key) {
+    res.status(401).json('Invalid key');
+    return;
+  }
   // const oneDay = 24 * 60 * 60 * 1000;
   const twoMinutes = 2 * 60 * 1000;
   const until = new Date();
@@ -63,6 +68,10 @@ app.get('/:getId', (req: Request, res: Response) => {
 });
 
 app.post('/:toId', (req: Request, res: Response) => {
+  if (req?.query?.key !== key) {
+    res.status(401).json('Invalid key');
+    return;
+  }
   const message = {
     toId: req?.params?.toId?.toString(),
     message: req?.query?.message?.toString(),

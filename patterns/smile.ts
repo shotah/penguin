@@ -13,18 +13,18 @@ export const smile = [
     green,
     green,
     green,
-    green,
+    backgroundColor,
     backgroundColor,
   ],
   // Line two
   [
     backgroundColor,
+    green,
     backgroundColor,
     backgroundColor,
     backgroundColor,
     backgroundColor,
-    backgroundColor,
-    backgroundColor,
+    green,
     backgroundColor,
   ],
   // Line three
