@@ -46,6 +46,10 @@ build: install
 #  DOCKER CMD  #
 ################
 
+.PHONY: docker-compose-up
+docker-compose-up: build
+	docker-compose up
+
 .PHONY: docker-build
 docker-build: build
 	docker build -t $(DOCKER_IMAGE_NAME) .
