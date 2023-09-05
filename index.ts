@@ -5,6 +5,7 @@ import { heart } from './patterns/heart';
 import { blank } from './patterns/blank';
 import { smile } from './patterns/smile';
 import { kiss } from './patterns/kiss';
+import { frown } from './patterns/frown';
 
 dotenv.config();
 
@@ -26,11 +27,12 @@ app.get('/:getId', (req: Request, res: Response) => {
     res.status(401).json('Invalid key');
     return;
   }
+  let patternResponse: Array<any> = [];
+
   // const oneDay = 24 * 60 * 60 * 1000;
   const twoMinutes = 2 * 60 * 1000;
   const until = new Date();
   const from = new Date(until.valueOf() - twoMinutes);
-
   const options: QueryOptions = {
     from: from,
     until: until,
@@ -52,18 +54,15 @@ app.get('/:getId', (req: Request, res: Response) => {
       presses = JSON.parse(response[0]?.message)?.presses;
     }
     if (presses === "1") {
-      res.send(smile);
-      return;
+      patternResponse = smile;
     } else if (presses === "2") {
-      res.send(heart);
-      return;
+      patternResponse = heart;
     } else if (presses === "3") {
-      res.send(kiss);
-      return;
+      patternResponse = kiss;
+    } else {
+      patternResponse = frown;
     };
-    // TODO: Add a default pattern. Maybe a blank screen?
-    // res.send(blank);
-    res.send(response[0]?.message ?? {message: 'No presses yet'});
+    res.status(200).json({ ledPattern: patternResponse});
   });
 });
 
@@ -77,7 +76,7 @@ app.post('/:toId', (req: Request, res: Response) => {
     presses: req?.query?.presses?.toString(),
   };
   logger.log('info', JSON.stringify(message), {timestamp: new Date()});
-  res.send(JSON.stringify(message));
+  res.status(200).json(message);
 });
 
 app.listen(port, () => {
