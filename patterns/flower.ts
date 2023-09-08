@@ -1,5 +1,5 @@
 // Description: A pattern for the LED matrix
-import {white, lightblue, yellow} from './colors';
+import {white, blue, yellow} from './colors';
 
 const backgroundColor = white;
 
@@ -9,8 +9,8 @@ export const flower = [
     backgroundColor,
     backgroundColor,
     backgroundColor,
-    lightblue,
-    lightblue,
+    blue,
+    blue,
     backgroundColor,
     backgroundColor,
     backgroundColor,
@@ -18,67 +18,67 @@ export const flower = [
   // Line two
   [
     backgroundColor,
-    lightblue,
-    lightblue,
+    blue,
+    blue,
     backgroundColor,
     backgroundColor,
-    lightblue,
-    lightblue,
+    blue,
+    blue,
     backgroundColor,
   ],
   // Line three
   [
     backgroundColor,
-    lightblue,
+    blue,
     backgroundColor,
     backgroundColor,
     backgroundColor,
     backgroundColor,
-    lightblue,
+    blue,
     backgroundColor,
   ],
   // Line four
   [
-    lightblue,
+    blue,
     backgroundColor,
     backgroundColor,
     yellow,
     yellow,
     backgroundColor,
     backgroundColor,
-    lightblue,
+    blue,
   ],
   // Line five
   [
-    lightblue,
+    blue,
     backgroundColor,
     backgroundColor,
     yellow,
     yellow,
     backgroundColor,
     backgroundColor,
-    lightblue,
+    blue,
   ],
   // Line six
   [
     backgroundColor,
-    lightblue,
+    blue,
     backgroundColor,
     backgroundColor,
     backgroundColor,
     backgroundColor,
-    lightblue,
+    blue,
     backgroundColor,
   ],
   // Line seven
   [
     backgroundColor,
-    lightblue,
-    lightblue,
+    blue,
+    blue,
     backgroundColor,
     backgroundColor,
-    lightblue,
-    lightblue,
+    blue,
+    blue,
     backgroundColor,
   ],
   // Line eight
@@ -86,8 +86,8 @@ export const flower = [
     backgroundColor,
     backgroundColor,
     backgroundColor,
-    lightblue,
-    lightblue,
+    blue,
+    blue,
     backgroundColor,
     backgroundColor,
     backgroundColor,

@@ -43,7 +43,9 @@ unsigned long period = 30000;  // 30 seconds
 // ESP32-s2:
 // #define ONBOARD_LED_PIN 18
 // ESP32-s3:
-#define ONBOARD_LED_PIN 38
+// rev 2: pin 39
+// rev 1: pin 45
+#define ONBOARD_LED_PIN 45
 #define ONBOARD_LED_COUNT 1
 Adafruit_NeoPixel onboard_pixel(ONBOARD_LED_COUNT, ONBOARD_LED_PIN, NEO_GRB + NEO_KHZ800);
 // PIN out to control the LEDs
@@ -52,6 +54,13 @@ Adafruit_NeoPixel onboard_pixel(ONBOARD_LED_COUNT, ONBOARD_LED_PIN, NEO_GRB + NE
 #define LED_COUNT 74
 Adafruit_NeoPixel pixels(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 ////// Declaring NeoPixel variables. ///////////
+
+////// Defining Buttons //////////
+const int BRIGHTNESS_BTN_PIN = 38;
+int BRIGHTNESS_BTN_STATE = 0; 
+const int MESSAGE_BTN_PIN = 37;
+int MESSAGE_BTN_STATE = 0;
+////// Defining Buttons //////////
 
 ////// NeoPixel Colors ///////////
 const uint32_t LED_RED = pixels.Color(255, 0, 0);
@@ -328,17 +337,32 @@ void deleteAllCredentials() {
 }
 ////// Use to clear wifi creds //////
 
+////// Brightness Button State and Check /////
+void checkButtonForBrightnessChange() {
+  BRIGHTNESS_BTN_STATE = digitalRead(BRIGHTNESS_BTN_PIN);
+  if(BRIGHTNESS_BTN_STATE == HIGH){
+    if(LED_BRIGHTNESS == 100){
+      LED_BRIGHTNESS = 0;
+    }
+    LED_BRIGHTNESS += 25;
+  }
+}
+////// Brightness Button State and Check /////
+
 //// MAIN LOOP: ////
 int counter = 0;
 void loop() {
   portal.handleClient();
   currentMillis = millis();
 
+  // Check and set brightness
+  checkButtonForBrightnessChange();
+  RenderLEDs();
+
   // API call over defined period.
   if (currentMillis - previousMillis >= period) {
-    CheckForResponse();
     RenderHealthLED();
-    RenderLEDs();
+    CheckForResponse();
     previousMillis = currentMillis;
   }
 }
@@ -359,6 +383,10 @@ void setup() {
   if (portal.begin()) {
     Serial.println("WiFi connected: " + WiFi.localIP().toString());
   }
+
+  // Init Button Input Mode:
+  pinMode(BRIGHTNESS_BTN_PIN, INPUT);
+  pinMode(MESSAGE_BTN_PIN, INPUT);
 
   // Init ONBOARD_LED Strip of Pixels
   onboard_pixel.begin();
