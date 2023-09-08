@@ -21,9 +21,6 @@ Preferences preferences;
 WebServer Server;
 AutoConnect portal(Server);
 AutoConnectConfig Config("penguin", "penguinpenguin");
-////// AutoConect Init ////////
-
-////// AutoConect Config API Page ////////
 AutoConnectAux aux("/penguin_api", "Penguin API");
 ACText(header, "API Settings");
 ACText(caption, "Penguin API Settings Page");
@@ -32,9 +29,9 @@ ACText(caption, "Penguin API Settings Page");
 ////// Setting looping for checking API ///////
 unsigned long CUR_MILS = millis();
 unsigned long API_PREV_MILS = 0;
-unsigned long API_CALL_PERIOD = 30000;  // 30 seconds
+unsigned long API_CALL_PERIOD = 20000;  // 30 seconds
 unsigned long RENDER_PREV_MILS = 0;
-unsigned long RENDER_CALL_PERIOD = 1000;  // 1 second;
+unsigned long RENDER_CALL_PERIOD = 700;  // 1.2 second;
 ////// Setting looping for checking API ///////
 
 ////// Declaring NeoPixel variables. ///////////
@@ -84,8 +81,9 @@ uint32_t LED_COLOR = LED_BLACK;
 ////// NeoPixel Defaults ///////////
 
 ////// Global Variables ///////////
+String SERVER_ADDRESS = "http://mc.bldhosting.com:3000/";
 DynamicJsonDocument docTest(5120);
-JsonArray testResponse = docTest.to<JsonArray>();
+JsonArray defaultPatternResponse = docTest.to<JsonArray>();
 DynamicJsonDocument doc(5120);
 JsonArray apiResponse = doc.to<JsonArray>();
 ////// Global Variables ///////////
@@ -175,10 +173,10 @@ String getAPiKeyArgs(PageArgument &args) {
 String getFromUsertId() {
   try {
     String fromUserId = preferences.getString("fromuserid", "");
-    Serial.printf("getFromUsertId: %s\n", &fromUserId[0]);
+    Serial.printf("\ngetFromUsertId: %s\n", &fromUserId[0]);
     return fromUserId;
   } catch (const std::exception &e) {
-    Serial.printf("getFromUsertId error: %s\n", e.what());
+    Serial.printf("\ngetFromUsertId error: %s\n", e.what());
     return "<p>";
   }
 }
@@ -188,10 +186,10 @@ String getFromUsertIdArgs(PageArgument &args) {
 String getToUsertId() {
   try {
     String toUserId = preferences.getString("touserid", "");
-    Serial.printf("getToUsertId: %s\n", &toUserId[0]);
+    Serial.printf("\ngetToUsertId: %s\n", &toUserId[0]);
     return toUserId;
   } catch (const std::exception &e) {
-    Serial.printf("getToUsertId error: %s\n", e.what());
+    Serial.printf("\ngetToUsertId error: %s\n", e.what());
     return "<p>";
   }
 }
@@ -199,22 +197,6 @@ String getToUsertIdArgs(PageArgument &args) {
   return getToUsertId();
 }
 ///// GET api Settings //////
-
-/////// API URL Details /////
-String getResponseUrl() {
-  String server_address = "http://mc.bldhosting.com:3000/";
-  String connectionURL = String(server_address + getFromUsertId() + "?key=" + getApiKey());
-  Serial.printf("Using URL API: %s\n", &connectionURL[0]);
-  return connectionURL;
-}
-String postConnectionUrl() {
-  String server_address = "http://mc.bldhosting.com:3000/";
-  //// TODO: get button presses
-  String connectionURL = String(server_address + getToUsertId() + "?key=" + getApiKey() + "&presses=" + MESSAGE_BTN_COUNT);
-  Serial.printf("Using URL API: %s\n", &connectionURL[0]);
-  return connectionURL;
-}
-/////// API URL Details /////
 
 ////// WRITE API Settings to SPIFFS ////////
 String writeApiSettings(PageArgument &args) {
@@ -242,12 +224,10 @@ PageBuilder ROOT("/", { ROOT_ELM });
 
 ///// Main call to API to get response data /////
 JsonArray GetAPIResponse() {
-  // init clients:
   WiFiClient wifi_client;
   HTTPClient http_client;
-
-  // setup client:
-  http_client.begin(wifi_client, getResponseUrl().c_str());
+  String connectionURL = String(SERVER_ADDRESS + getFromUsertId() + "?apikey=" + getApiKey());
+  http_client.begin(wifi_client, connectionURL.c_str());
   int response_code = http_client.GET();
   Serial.printf("[HTTP] GET... code: %d\n", response_code);
   if (response_code == HTTP_CODE_OK) {
@@ -260,13 +240,45 @@ JsonArray GetAPIResponse() {
     http_client.end();
     // Pretty print JSON response
     // serializeJsonPretty(doc, Serial);
-    return doc["ledPattern"];
+    return (error) ? defaultPatternResponse : doc["ledPattern"];
   } else {
     Serial.printf("[HTTP] GET... failed, error: %s\n", http_client.errorToString(response_code).c_str());
   }
-  return testResponse;
+  http_client.end();
+  return defaultPatternResponse;
 }
 ///// Main call to API to get response data /////
+
+///// API Post Message Count /////
+void PostMessageCount() {
+  if ( MESSAGE_BTN_COUNT == 0){
+    return;
+  }
+
+  WiFiClient wifi_client;
+  HTTPClient http_client;
+  String connectionURL = String(SERVER_ADDRESS + getToUsertId());
+  // String connectionURL = String(SERVER_ADDRESS + getToUsertId() + "?apikey=" + getApiKey() + "&presses=" + MESSAGE_BTN_COUNT);
+  Serial.printf("connecitonURL: %s\n", connectionURL.c_str());  
+
+  http_client.begin(wifi_client, connectionURL.c_str());
+  http_client.addHeader("Content-Type", "application/x-www-form-urlencoded", false, true);
+
+  String httpRequestData = String("?apikey=" + getApiKey() + "&presses=" + MESSAGE_BTN_COUNT);
+  Serial.printf("httpRequestData: %s\n", httpRequestData.c_str());
+
+  int response_code = http_client.POST(httpRequestData);
+  if (response_code == HTTP_CODE_OK) {
+    Serial.printf("[HTTP] GET... code: %d\n", response_code);
+    // On success prevent from trying to send again.
+  } else {
+    Serial.printf("[HTTP] POST... failed, error: %s\n", http_client.errorToString(response_code).c_str());
+  }
+  http_client.writeToStream(&Serial);
+  http_client.end();
+  MESSAGE_BTN_COUNT = 0;
+}
+///// API Post Message Count /////
 
 ///// Render health LED on esp32 /////////
 void RenderHealthLED() {
@@ -282,8 +294,11 @@ void RenderHealthLED() {
 void RenderLEDs() {
   pixels.clear();
   int32_t currentPixel = 0;
-  // if response is null, display backup array.
-  JsonArray displayPattern = (apiResponse != nullptr) ? apiResponse : testResponse;
+  JsonArray displayPattern = defaultPatternResponse;
+  if (apiResponse != nullptr) {
+    displayPattern = apiResponse;
+    defaultPatternResponse = apiResponse;
+  }
   for (int row = 0; row <= 7; row++) {
     // Serial.printf("\nCurrent Row: %s\n", String(row));
     // serializeJson(displayPattern[row], Serial);
@@ -303,16 +318,10 @@ void RenderLEDs() {
   pixels.show();
 }
 
-////// Main call to get response from server /////////
-void CheckForResponse() {
-  apiResponse = GetAPIResponse();
-}
-////// Main call to get response from server /////////
-
 ////// set back up image if server not available ///////
 void SetDefaultVars() {
   for (int row = 0; row <= 7; row++) {
-    JsonArray rowTest = testResponse.createNestedArray();
+    JsonArray rowTest = defaultPatternResponse.createNestedArray();
     for (int led = 0; led <= 7; led++) {
       JsonArray ledTest = rowTest.createNestedArray();
       ledTest.add(255);
@@ -392,7 +401,8 @@ void loop() {
   // API call over defined API_CALL_PERIOD.
   if (CUR_MILS - API_PREV_MILS >= API_CALL_PERIOD) {
     RenderHealthLED();
-    CheckForResponse();
+    PostMessageCount();
+    apiResponse = GetAPIResponse();
     API_PREV_MILS = CUR_MILS;
   }
 }
@@ -426,7 +436,7 @@ void setup() {
   pixels.begin();
   pixels.show();
   // do an initial call and show the output:
-  CheckForResponse();
+  apiResponse = GetAPIResponse();
   RenderLEDs();
 }
 //// MAIN SETUP: ////

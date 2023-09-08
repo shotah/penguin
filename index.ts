@@ -11,7 +11,7 @@ import { flower } from './patterns/flower';
 dotenv.config();
 
 const app: Express = express();
-const key = process.env.KEY || 'default';
+const apikey = process.env.APIKEY || 'default';
 const port = process.env.PORT || 3000;
 const logLevel = process.env.LOG_LEVEL || 'info';
 const logger = winston.createLogger({
@@ -19,21 +19,23 @@ const logger = winston.createLogger({
   transports: [
     new transports.Console({format: winston.format.simple()}),
     new transports.File({filename: 'log.log', level: 'info'}),
-    new transports.File({filename: 'error.log', level: 'debug'}),
   ],
 });
 
 app.get('/:getId', (req: Request, res: Response) => {
-  if (req?.query?.key !== key) {
+  if (req?.query?.apikey !== apikey) {
+    logger.error(JSON.stringify(req?.query));
+    logger.error(JSON.stringify(req?.params));
     res.status(401).json('Invalid key');
     return;
   }
   let patternResponse: Array<any> = [];
 
   // const oneDay = 24 * 60 * 60 * 1000;
-  const twoMinutes = 2 * 60 * 1000;
+  // const twoMinutes = 2 * 60 * 1000;
+  const tenMinutes = 10 * 60 * 1000;
   const until = new Date();
-  const from = new Date(until.valueOf() - twoMinutes);
+  const from = new Date(until.valueOf() - tenMinutes);
   const options: QueryOptions = {
     from: from,
     until: until,
@@ -68,7 +70,9 @@ app.get('/:getId', (req: Request, res: Response) => {
 });
 
 app.post('/:toId', (req: Request, res: Response) => {
-  if (req?.query?.key !== key) {
+  if (req?.query?.apikey !== apikey) {
+    logger.error(JSON.stringify(req?.query));
+    logger.error(JSON.stringify(req?.params));
     res.status(401).json('Invalid key');
     return;
   }
