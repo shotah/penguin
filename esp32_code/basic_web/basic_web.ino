@@ -30,12 +30,11 @@ ACText(caption, "Penguin API Settings Page");
 ////// AutoConect Config API Page ////////
 
 ////// Setting looping for checking API ///////
-unsigned long previousMillis = 0;
-unsigned long currentMillis = millis();
-// TWO minute check
-// unsigned long period = 120000;  // two minutes
-// unsigned long period = 60000;  // one minutes
-unsigned long period = 30000;  // 30 seconds
+unsigned long CUR_MILS = millis();
+unsigned long API_PREV_MILS = 0;
+unsigned long API_CALL_PERIOD = 30000;  // 30 seconds
+unsigned long RENDER_PREV_MILS = 0;
+unsigned long RENDER_CALL_PERIOD = 1000;  // 1 second;
 ////// Setting looping for checking API ///////
 
 ////// Declaring NeoPixel variables. ///////////
@@ -57,9 +56,12 @@ Adafruit_NeoPixel pixels(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 ////// Defining Buttons //////////
 const int BRIGHTNESS_BTN_PIN = 38;
-int BRIGHTNESS_BTN_STATE = 0; 
+int BRIGHTNESS_BTN_STATE = 0;
+int BRIGHTNESS_BTN_READ = 0;
 const int MESSAGE_BTN_PIN = 37;
 int MESSAGE_BTN_STATE = 0;
+int MESSAGE_BTN_READ = 0;
+int MESSAGE_BTN_COUNT = 0;
 ////// Defining Buttons //////////
 
 ////// NeoPixel Colors ///////////
@@ -208,7 +210,7 @@ String getResponseUrl() {
 String postConnectionUrl() {
   String server_address = "http://mc.bldhosting.com:3000/";
   //// TODO: get button presses
-  String connectionURL = String(server_address + getToUsertId() + "?key=" + getApiKey() + "&presses=2");
+  String connectionURL = String(server_address + getToUsertId() + "?key=" + getApiKey() + "&presses=" + MESSAGE_BTN_COUNT);
   Serial.printf("Using URL API: %s\n", &connectionURL[0]);
   return connectionURL;
 }
@@ -283,22 +285,20 @@ void RenderLEDs() {
   // if response is null, display backup array.
   JsonArray displayPattern = (apiResponse != nullptr) ? apiResponse : testResponse;
   for (int row = 0; row <= 7; row++) {
-    Serial.printf("\nCurrent Row: %s\n", String(row));
-    serializeJson(displayPattern[row], Serial);
+    // Serial.printf("\nCurrent Row: %s\n", String(row));
+    // serializeJson(displayPattern[row], Serial);
     for (int led = 0; led <= 7; led++) {
-      Serial.printf("\nCurrent LED: %s", String(led));
-      serializeJson(displayPattern[row][led], Serial);
+      // Serial.printf("\nCurrent LED: %s", String(led));
+      // serializeJson(displayPattern[row][led], Serial);
       pixels.setPixelColor(
         currentPixel,
         pixels.Color(
           displayPattern[row][led][0].as<uint8_t>(),
           displayPattern[row][led][1].as<uint8_t>(),
-          displayPattern[row][led][2].as<uint8_t>())
-        );
+          displayPattern[row][led][2].as<uint8_t>()));
       currentPixel++;
     }
   }
-  pixels.setPixelColor(64, pixels.Color(127, 255, 0));
   pixels.setBrightness(LED_BRIGHTNESS);
   pixels.show();
 }
@@ -340,30 +340,60 @@ void deleteAllCredentials() {
 ////// Brightness Button State and Check /////
 void checkButtonForBrightnessChange() {
   BRIGHTNESS_BTN_STATE = digitalRead(BRIGHTNESS_BTN_PIN);
-  if(BRIGHTNESS_BTN_STATE == HIGH){
-    if(LED_BRIGHTNESS == 100){
+  if (BRIGHTNESS_BTN_STATE == HIGH) {
+    BRIGHTNESS_BTN_READ++;
+  }
+}
+void setLEDBrightness() {
+  if (BRIGHTNESS_BTN_READ >= 1) {
+    if (LED_BRIGHTNESS == 100) {
       LED_BRIGHTNESS = 0;
     }
     LED_BRIGHTNESS += 25;
+    BRIGHTNESS_BTN_READ = 0;
   }
 }
 ////// Brightness Button State and Check /////
+
+///// Increment Message Button ////
+void checkButtonForMessageCountChange() {
+  MESSAGE_BTN_STATE = digitalRead(MESSAGE_BTN_PIN);
+  if (MESSAGE_BTN_STATE == HIGH) {
+    MESSAGE_BTN_READ++;
+  }
+}
+void setMessageCount() {
+  if (MESSAGE_BTN_READ >= 1) {
+    MESSAGE_BTN_COUNT++;
+    MESSAGE_BTN_READ = 0;
+    Serial.printf("\nCurrent MESSAGE_BTN_COUNT: %s", String(MESSAGE_BTN_COUNT));
+  }
+}
+///// Increment Message Button ////
 
 //// MAIN LOOP: ////
 int counter = 0;
 void loop() {
   portal.handleClient();
-  currentMillis = millis();
+  CUR_MILS = millis();
 
-  // Check and set brightness
+  // Check for message button press
+  checkButtonForMessageCountChange();
   checkButtonForBrightnessChange();
-  RenderLEDs();
 
-  // API call over defined period.
-  if (currentMillis - previousMillis >= period) {
+  // 1 second intervals for better button handling;
+  if (CUR_MILS - RENDER_PREV_MILS >= RENDER_CALL_PERIOD) {
+    setMessageCount();
+    setLEDBrightness();
+    RenderLEDs();
+    RENDER_PREV_MILS = CUR_MILS;
+  }
+
+  // API call over defined API_CALL_PERIOD.
+  if (CUR_MILS - API_PREV_MILS >= API_CALL_PERIOD) {
     RenderHealthLED();
     CheckForResponse();
-    previousMillis = currentMillis;
+    API_PREV_MILS = CUR_MILS;
   }
 }
 //// MAIN LOOP: ////
