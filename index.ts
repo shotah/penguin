@@ -50,7 +50,7 @@ app.get('/:getId', (req: Request, res: Response) => {
       res.send(err);
     }
     const response = results?.file?.filter(
-      (entry: any) => JSON.parse(entry?.message).toId === req.params.getId
+      (entry: any) => JSON.parse(entry?.message)?.toId === req?.params?.getId
     );
     let presses = "0";
     if (response?.length > 0) {

@@ -257,19 +257,19 @@ void PostMessageCount() {
 
   WiFiClient wifi_client;
   HTTPClient http_client;
-  String connectionURL = String(SERVER_ADDRESS + getToUsertId());
-  // String connectionURL = String(SERVER_ADDRESS + getToUsertId() + "?apikey=" + getApiKey() + "&presses=" + MESSAGE_BTN_COUNT);
+  // String connectionURL = String(SERVER_ADDRESS + getToUsertId() + "/");
+  String connectionURL = String(SERVER_ADDRESS + getToUsertId() + "?apikey=" + getApiKey() + "&presses=" + MESSAGE_BTN_COUNT);
   Serial.printf("connecitonURL: %s\n", connectionURL.c_str());  
 
   http_client.begin(wifi_client, connectionURL.c_str());
-  http_client.addHeader("Content-Type", "application/x-www-form-urlencoded", false, true);
+  http_client.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
-  String httpRequestData = String("?apikey=" + getApiKey() + "&presses=" + MESSAGE_BTN_COUNT);
+  String httpRequestData = String("presses=" + String(MESSAGE_BTN_COUNT) + "&apikey=" + getApiKey());
   Serial.printf("httpRequestData: %s\n", httpRequestData.c_str());
 
   int response_code = http_client.POST(httpRequestData);
   if (response_code == HTTP_CODE_OK) {
-    Serial.printf("[HTTP] GET... code: %d\n", response_code);
+    Serial.printf("[HTTP] POST... code: %d\n", response_code);
     // On success prevent from trying to send again.
   } else {
     Serial.printf("[HTTP] POST... failed, error: %s\n", http_client.errorToString(response_code).c_str());
@@ -401,8 +401,11 @@ void loop() {
   // API call over defined API_CALL_PERIOD.
   if (CUR_MILS - API_PREV_MILS >= API_CALL_PERIOD) {
     RenderHealthLED();
-    PostMessageCount();
-    apiResponse = GetAPIResponse();
+    if ( MESSAGE_BTN_COUNT >= 1){
+      PostMessageCount();
+    } else {
+      apiResponse = GetAPIResponse();
+    }
     API_PREV_MILS = CUR_MILS;
   }
 }
@@ -410,8 +413,9 @@ void loop() {
 
 //// MAIN SETUP: ////
 void setup() {
-  // DEBUG: used to clear credentials:
+  // DEBUG: used to clear credentials vvvv
   // deleteAllCredentials();
+  // DEBUG: used to clear credentials ^^^
   Serial.begin(115200);
   Serial.println();
   SetDefaultVars();
