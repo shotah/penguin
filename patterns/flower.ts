@@ -1,5 +1,5 @@
-// Description: A black pattern for the LED matrix
-import {white} from './colors';
+// Description: A pattern for the LED matrix
+import {white, lightblue, yellow} from './colors';
 
 const backgroundColor = white;
 
@@ -9,8 +9,8 @@ export const blank = [
     backgroundColor,
     backgroundColor,
     backgroundColor,
-    backgroundColor,
-    backgroundColor,
+    lightblue,
+    lightblue,
     backgroundColor,
     backgroundColor,
     backgroundColor,
@@ -18,67 +18,67 @@ export const blank = [
   // Line two
   [
     backgroundColor,
+    lightblue,
+    lightblue,
     backgroundColor,
     backgroundColor,
-    backgroundColor,
-    backgroundColor,
-    backgroundColor,
-    backgroundColor,
+    lightblue,
+    lightblue,
     backgroundColor,
   ],
   // Line three
   [
     backgroundColor,
+    lightblue,
     backgroundColor,
     backgroundColor,
     backgroundColor,
     backgroundColor,
-    backgroundColor,
-    backgroundColor,
+    lightblue,
     backgroundColor,
   ],
   // Line four
   [
+    lightblue,
     backgroundColor,
     backgroundColor,
+    yellow,
+    yellow,
     backgroundColor,
     backgroundColor,
-    backgroundColor,
-    backgroundColor,
-    backgroundColor,
-    backgroundColor,
+    lightblue,
   ],
   // Line five
   [
+    lightblue,
     backgroundColor,
     backgroundColor,
+    yellow,
+    yellow,
     backgroundColor,
     backgroundColor,
-    backgroundColor,
-    backgroundColor,
-    backgroundColor,
-    backgroundColor,
+    lightblue,
   ],
   // Line six
   [
     backgroundColor,
+    lightblue,
     backgroundColor,
     backgroundColor,
     backgroundColor,
     backgroundColor,
-    backgroundColor,
-    backgroundColor,
+    lightblue,
     backgroundColor,
   ],
   // Line seven
   [
     backgroundColor,
+    lightblue,
+    lightblue,
     backgroundColor,
     backgroundColor,
-    backgroundColor,
-    backgroundColor,
-    backgroundColor,
-    backgroundColor,
+    lightblue,
+    lightblue,
     backgroundColor,
   ],
   // Line eight
@@ -86,8 +86,8 @@ export const blank = [
     backgroundColor,
     backgroundColor,
     backgroundColor,
-    backgroundColor,
-    backgroundColor,
+    lightblue,
+    lightblue,
     backgroundColor,
     backgroundColor,
     backgroundColor,

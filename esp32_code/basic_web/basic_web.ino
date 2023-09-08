@@ -7,11 +7,9 @@
 #include <AutoConnect.h>
 #include <Adafruit_NeoPixel.h>
 
-
 /////// Preferences Settings ///////
 Preferences preferences;
 /////// Preferences Settings ///////
-
 
 /////// AVR Power Control module /////////
 #ifdef __AVR__
@@ -19,20 +17,17 @@ Preferences preferences;
 #endif
 /////// AVR Power Control module /////////
 
-
 ////// AutoConect Init ////////
 WebServer Server;
 AutoConnect portal(Server);
 AutoConnectConfig Config("penguin", "penguinpenguin");
 ////// AutoConect Init ////////
 
-
 ////// AutoConect Config API Page ////////
 AutoConnectAux aux("/penguin_api", "Penguin API");
 ACText(header, "API Settings");
 ACText(caption, "Penguin API Settings Page");
 ////// AutoConect Config API Page ////////
-
 
 ////// Setting looping for checking API ///////
 unsigned long previousMillis = 0;
@@ -42,7 +37,6 @@ unsigned long currentMillis = millis();
 // unsigned long period = 60000;  // one minutes
 unsigned long period = 30000;  // 30 seconds
 ////// Setting looping for checking API ///////
-
 
 ////// Declaring NeoPixel variables. ///////////
 // PIN out to control the LEDs
@@ -59,7 +53,6 @@ Adafruit_NeoPixel onboard_pixel(ONBOARD_LED_COUNT, ONBOARD_LED_PIN, NEO_GRB + NE
 Adafruit_NeoPixel pixels(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 ////// Declaring NeoPixel variables. ///////////
 
-
 ////// NeoPixel Colors ///////////
 const uint32_t LED_RED = pixels.Color(255, 0, 0);
 const uint32_t LED_GREEN = pixels.Color(0, 255, 0);
@@ -72,14 +65,12 @@ const uint32_t LED_GRAY = pixels.Color(143, 188, 143);
 const uint32_t LED_BLACK = pixels.Color(0, 0, 0);
 ////// NeoPixel Colors ///////////
 
-
 ////// NeoPixel Defaults ///////////
-uint32_t LED_BRIGHTNESS = 50;         // 1-100
-uint32_t LED_BRIGHTNESS_OFF = 0;      // 1-100
+uint32_t LED_BRIGHTNESS = 25;     // 1-100
+uint32_t LED_BRIGHTNESS_OFF = 0;  // 1-100
 uint32_t LED_HEALTH_COLOR = LED_GREEN;
 uint32_t LED_COLOR = LED_BLACK;
 ////// NeoPixel Defaults ///////////
-
 
 ////// Global Variables ///////////
 DynamicJsonDocument docTest(5120);
@@ -87,7 +78,6 @@ JsonArray testResponse = docTest.to<JsonArray>();
 DynamicJsonDocument doc(5120);
 JsonArray apiResponse = doc.to<JsonArray>();
 ////// Global Variables ///////////
-
 
 ////// Root webpage to enable people to change API data  //////////
 static const char rootHtml[] PROGMEM = R"(
@@ -157,19 +147,18 @@ static const char rootHtml[] PROGMEM = R"(
 )";
 ////// Root webpage to enable people to change API data  //////////
 
-
 ///// GET api Settings //////
 String getApiKey() {
   try {
     String apiKey = preferences.getString("apikey", "");
     Serial.printf("getApiKey: %s\n", &apiKey[0]);
     return apiKey;
-  } catch (const std::exception& e) {
+  } catch (const std::exception &e) {
     Serial.printf("getApiKey error: %s\n", e.what());
     return "<p>";
   }
 }
-String getAPiKeyArgs(PageArgument& args) {
+String getAPiKeyArgs(PageArgument &args) {
   return getApiKey();
 }
 String getFromUsertId() {
@@ -177,12 +166,12 @@ String getFromUsertId() {
     String fromUserId = preferences.getString("fromuserid", "");
     Serial.printf("getFromUsertId: %s\n", &fromUserId[0]);
     return fromUserId;
-  } catch (const std::exception& e) {
+  } catch (const std::exception &e) {
     Serial.printf("getFromUsertId error: %s\n", e.what());
     return "<p>";
   }
 }
-String getFromUsertIdArgs(PageArgument& args) {
+String getFromUsertIdArgs(PageArgument &args) {
   return getFromUsertId();
 }
 String getToUsertId() {
@@ -190,16 +179,15 @@ String getToUsertId() {
     String toUserId = preferences.getString("touserid", "");
     Serial.printf("getToUsertId: %s\n", &toUserId[0]);
     return toUserId;
-  } catch (const std::exception& e) {
+  } catch (const std::exception &e) {
     Serial.printf("getToUsertId error: %s\n", e.what());
     return "<p>";
   }
 }
-String getToUsertIdArgs(PageArgument& args) {
+String getToUsertIdArgs(PageArgument &args) {
   return getToUsertId();
 }
 ///// GET api Settings //////
-
 
 /////// API URL Details /////
 String getResponseUrl() {
@@ -217,9 +205,8 @@ String postConnectionUrl() {
 }
 /////// API URL Details /////
 
-
 ////// WRITE API Settings to SPIFFS ////////
-String writeApiSettings(PageArgument& args) {
+String writeApiSettings(PageArgument &args) {
   if (args.hasArg("apikey")) {
     preferences.putString("apikey", args.arg("apikey"));
   }
@@ -234,7 +221,6 @@ String writeApiSettings(PageArgument& args) {
 }
 ////// WRITE API Settings to SPIFFS ////////
 
-
 ////// Building page and inserting data //////
 PageElement ROOT_ELM(FPSTR(rootHtml), { { "APIKEY", getAPiKeyArgs },
                                         { "FROMUSERID", getFromUsertIdArgs },
@@ -242,7 +228,6 @@ PageElement ROOT_ELM(FPSTR(rootHtml), { { "APIKEY", getAPiKeyArgs },
                                         { "WRITESETTINGS", writeApiSettings } });
 PageBuilder ROOT("/", { ROOT_ELM });
 ////// Building page and inserting data //////
-
 
 ///// Main call to API to get response data /////
 JsonArray GetAPIResponse() {
@@ -255,12 +240,7 @@ JsonArray GetAPIResponse() {
   int response_code = http_client.GET();
   Serial.printf("[HTTP] GET... code: %d\n", response_code);
   if (response_code == HTTP_CODE_OK) {
-    // StaticJsonDocument<80> filter;
-    // JsonObject filter_ledPattern = filter["ledPattern"].createNestedObject();
-    // filter_ledPattern["ledPattern"] = true;
-      
     DynamicJsonDocument doc(10240);
-    // DeserializationError error = deserializeJson(doc, wifi_client, DeserializationOption::Filter(filter));
     DeserializationError error = deserializeJson(doc, wifi_client);
     if (error) {
       Serial.print(F("deserializeJson() failed: "));
@@ -277,74 +257,62 @@ JsonArray GetAPIResponse() {
 }
 ///// Main call to API to get response data /////
 
-uint32_t HEALTH_COLOR() {
-  LED_COLOR = (LED_COLOR == LED_HEALTH_COLOR) ? LED_BLACK : LED_HEALTH_COLOR;
-  return LED_COLOR;
-}
-
-void ShowOnbaordPixel() {
+///// Render health LED on esp32 /////////
+void RenderHealthLED() {
   onboard_pixel.clear();
-  onboard_pixel.setPixelColor(0, HEALTH_COLOR());
+  LED_COLOR = (LED_COLOR == LED_HEALTH_COLOR) ? LED_BLACK : LED_HEALTH_COLOR;
+  onboard_pixel.setPixelColor(0, LED_COLOR);
   onboard_pixel.setBrightness(LED_BRIGHTNESS);
   onboard_pixel.show();
 }
+///// Render health LED on esp32 /////////
 
-void ShowLEDPixels() {
+///// renders leds /////
+void RenderLEDs() {
   pixels.clear();
   int32_t currentPixel = 0;
-  // serializeJsonPretty(apiResponse, Serial);
-  for(int row=0; row <= 7; row++) {
+  // if response is null, display backup array.
+  JsonArray displayPattern = (apiResponse != nullptr) ? apiResponse : testResponse;
+  for (int row = 0; row <= 7; row++) {
     Serial.printf("\nCurrent Row: %s\n", String(row));
-    serializeJson(apiResponse[row], Serial);
-    for(int led=0; led <= 7; led++) {
-      Serial.printf("\nCurrent LED: %s\n", String(row));
+    serializeJson(displayPattern[row], Serial);
+    for (int led = 0; led <= 7; led++) {
+      Serial.printf("\nCurrent LED: %s", String(led));
       serializeJson(apiResponse[row][led], Serial);
-      // pixels.setPixelColor(currentPixel, pixels.Color(apiResponse[row][led]));
-      // Serial.printf("Setting Pixel: %s\n", String(currentPixel));
-      // Serial.printf("First RGB: %s\n", apiResponse[row][led][0]);
-      // apiResponse.get(0).get(0);
-      // serializeJsonPretty(apiResponse[row][led], Serial);
-      pixels.setPixelColor(currentPixel, pixels.Color(
-        apiResponse[row][led][0].as<uint8_t>(),
-        apiResponse[row][led][1].as<uint8_t>(),
-        apiResponse[row][led][2].as<uint8_t>())
-      );
+      pixels.setPixelColor(
+        currentPixel,
+        pixels.Color(
+          displayPattern[row][led][0].as<uint8_t>(),
+          displayPattern[row][led][1].as<uint8_t>(),
+          displayPattern[row][led][2].as<uint8_t>())
+        );
       currentPixel++;
     }
   }
-  pixels.setPixelColor(64, pixels.Color(127,255,0));
+  pixels.setPixelColor(64, pixels.Color(127, 255, 0));
   pixels.setBrightness(LED_BRIGHTNESS);
   pixels.show();
 }
 
+////// Main call to get response from server /////////
 void CheckForResponse() {
   apiResponse = GetAPIResponse();
-  // serializeJson(apiResponse[0], Serial);
 }
+////// Main call to get response from server /////////
 
+////// set back up image if server not available ///////
 void SetDefaultVars() {
-  JsonArray testledPattern = testResponse.createNestedArray();
-  for(int row=0; row <= 7; row++) {
-    JsonArray rowTest = testledPattern.createNestedArray();
-    for(int led=0; led <= 7; led++) {
+  for (int row = 0; row <= 7; row++) {
+    JsonArray rowTest = testResponse.createNestedArray();
+    for (int led = 0; led <= 7; led++) {
       JsonArray ledTest = rowTest.createNestedArray();
       ledTest.add(255);
-      ledTest.add(0);
-      ledTest.add(0);
+      ledTest.add(255);
+      ledTest.add(255);
     };
   };
-  JsonArray ledPattern = apiResponse.createNestedArray();
-  for(int row=0; row <= 7; row++) {
-    JsonArray rowPattern = ledPattern.createNestedArray();
-    for(int led=0; led <= 7; led++) {
-      JsonArray ledPattern = rowPattern.createNestedArray();
-      ledPattern.add(255);
-      ledPattern.add(0);
-      ledPattern.add(0);
-    };
-  };
-
 }
+////// set back up image if server not available ///////
 
 ////// Use to clear wifi creds //////
 void deleteAllCredentials() {
@@ -355,7 +323,7 @@ void deleteAllCredentials() {
   while (ent--) {
     int8_t zero = 0;
     credential.load(zero, &config);
-    credential.del((const char*)&config.ssid[0]);
+    credential.del((const char *)&config.ssid[0]);
   }
 }
 ////// Use to clear wifi creds //////
@@ -369,13 +337,12 @@ void loop() {
   // API call over defined period.
   if (currentMillis - previousMillis >= period) {
     CheckForResponse();
-    ShowOnbaordPixel();
-    ShowLEDPixels();
+    RenderHealthLED();
+    RenderLEDs();
     previousMillis = currentMillis;
   }
 }
 //// MAIN LOOP: ////
-
 
 //// MAIN SETUP: ////
 void setup() {
@@ -396,12 +363,12 @@ void setup() {
   // Init ONBOARD_LED Strip of Pixels
   onboard_pixel.begin();
   onboard_pixel.show();
-  ShowOnbaordPixel();
+  RenderHealthLED();
   // Init LED Strip of Pixels
   pixels.begin();
   pixels.show();
   // do an initial call and show the output:
   CheckForResponse();
-  ShowLEDPixels();
+  RenderLEDs();
 }
 //// MAIN SETUP: ////

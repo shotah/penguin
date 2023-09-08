@@ -6,6 +6,7 @@ import { blank } from './patterns/blank';
 import { smile } from './patterns/smile';
 import { kiss } from './patterns/kiss';
 import { frown } from './patterns/frown';
+import { flower } from './patterns/flower';
 
 dotenv.config();
 
@@ -60,9 +61,9 @@ app.get('/:getId', (req: Request, res: Response) => {
     } else if (presses === "3") {
       patternResponse = kiss;
     } else {
-      patternResponse = frown;
+      patternResponse = flower;
     };
-    res.status(200).json({ ledPattern: patternResponse});
+    res.status(200).json({ ledPattern: patternResponse });
   });
 });
 
