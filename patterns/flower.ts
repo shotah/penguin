@@ -3,7 +3,7 @@ import {white, lightblue, yellow} from './colors';
 
 const backgroundColor = white;
 
-export const blank = [
+export const flower = [
   // Line one
   [
     backgroundColor,

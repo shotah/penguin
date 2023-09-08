@@ -278,7 +278,7 @@ void RenderLEDs() {
     serializeJson(displayPattern[row], Serial);
     for (int led = 0; led <= 7; led++) {
       Serial.printf("\nCurrent LED: %s", String(led));
-      serializeJson(apiResponse[row][led], Serial);
+      serializeJson(displayPattern[row][led], Serial);
       pixels.setPixelColor(
         currentPixel,
         pixels.Color(
