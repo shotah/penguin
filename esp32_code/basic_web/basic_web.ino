@@ -17,14 +17,14 @@ Preferences preferences;
 #endif
 /////// AVR Power Control module /////////
 
-////// AutoConect Init ////////
+////// AutoConnect Init ////////
 WebServer Server;
 AutoConnect portal(Server);
 AutoConnectConfig Config("penguin", "penguinpenguin");
 AutoConnectAux aux("/penguin_api", "Penguin API");
 ACText(header, "API Settings");
 ACText(caption, "Penguin API Settings Page");
-////// AutoConect Config API Page ////////
+////// AutoConnect Config API Page ////////
 
 ////// Setting looping for checking API ///////
 unsigned long CUR_MILS = millis();
@@ -170,31 +170,31 @@ String getApiKey() {
 String getAPiKeyArgs(PageArgument &args) {
   return getApiKey();
 }
-String getFromUsertId() {
+String getFromUserId() {
   try {
     String fromUserId = preferences.getString("fromuserid", "");
-    Serial.printf("\ngetFromUsertId: %s\n", &fromUserId[0]);
+    Serial.printf("\ngetFromUserId: %s\n", &fromUserId[0]);
     return fromUserId;
   } catch (const std::exception &e) {
-    Serial.printf("\ngetFromUsertId error: %s\n", e.what());
+    Serial.printf("\ngetFromUserId error: %s\n", e.what());
     return "<p>";
   }
 }
-String getFromUsertIdArgs(PageArgument &args) {
-  return getFromUsertId();
+String getFromUserIdArgs(PageArgument &args) {
+  return getFromUserId();
 }
-String getToUsertId() {
+String getToUserId() {
   try {
     String toUserId = preferences.getString("touserid", "");
-    Serial.printf("\ngetToUsertId: %s\n", &toUserId[0]);
+    Serial.printf("\ngetToUserId: %s\n", &toUserId[0]);
     return toUserId;
   } catch (const std::exception &e) {
-    Serial.printf("\ngetToUsertId error: %s\n", e.what());
+    Serial.printf("\ngetToUserId error: %s\n", e.what());
     return "<p>";
   }
 }
-String getToUsertIdArgs(PageArgument &args) {
-  return getToUsertId();
+String getToUserIdArgs(PageArgument &args) {
+  return getToUserId();
 }
 ///// GET api Settings //////
 
@@ -216,8 +216,8 @@ String writeApiSettings(PageArgument &args) {
 
 ////// Building page and inserting data //////
 PageElement ROOT_ELM(FPSTR(rootHtml), { { "APIKEY", getAPiKeyArgs },
-                                        { "FROMUSERID", getFromUsertIdArgs },
-                                        { "TOUSERID", getToUsertIdArgs },
+                                        { "FROMUSERID", getFromUserIdArgs },
+                                        { "TOUSERID", getToUserIdArgs },
                                         { "WRITESETTINGS", writeApiSettings } });
 PageBuilder ROOT("/", { ROOT_ELM });
 ////// Building page and inserting data //////
@@ -226,7 +226,7 @@ PageBuilder ROOT("/", { ROOT_ELM });
 JsonArray GetAPIResponse() {
   WiFiClient wifi_client;
   HTTPClient http_client;
-  String connectionURL = String(SERVER_ADDRESS + getFromUsertId() + "?apikey=" + getApiKey());
+  String connectionURL = String(SERVER_ADDRESS + getFromUserId() + "?apikey=" + getApiKey());
   http_client.begin(wifi_client, connectionURL.c_str());
   int response_code = http_client.GET();
   Serial.printf("[HTTP] GET... code: %d\n", response_code);
@@ -257,9 +257,9 @@ void PostMessageCount() {
 
   WiFiClient wifi_client;
   HTTPClient http_client;
-  // String connectionURL = String(SERVER_ADDRESS + getToUsertId() + "/");
-  String connectionURL = String(SERVER_ADDRESS + getToUsertId() + "?apikey=" + getApiKey() + "&presses=" + MESSAGE_BTN_COUNT);
-  Serial.printf("connecitonURL: %s\n", connectionURL.c_str());  
+  // String connectionURL = String(SERVER_ADDRESS + getToUserId() + "/");
+  String connectionURL = String(SERVER_ADDRESS + getToUserId() + "?apikey=" + getApiKey() + "&presses=" + MESSAGE_BTN_COUNT);
+  Serial.printf("connectionURL: %s\n", connectionURL.c_str());  
 
   http_client.begin(wifi_client, connectionURL.c_str());
   http_client.addHeader("Content-Type", "application/x-www-form-urlencoded");
